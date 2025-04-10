@@ -8,13 +8,15 @@ import operator
 import time
 import sys, os
 import matplotlib.pyplot as plt
-import hunspell
+# import hunspell
+from spellchecker import SpellChecker
 from string import ascii_uppercase
 
 class Application:
     def __init__(self):
-	self.directory = 'model'
-        self.hs = hunspell.HunSpell('/usr/share/hunspell/en_US.dic', '/usr/share/hunspell/en_US.aff')
+	    self.directory = 'model'
+        # self.hs = hunspell.HunSpell('en_US.dic', 'en_US.aff')
+        self.hs = SpellChecker()
         self.vs = cv2.VideoCapture(0)
         self.current_image = None
         self.current_image2 = None
@@ -29,19 +31,19 @@ class Application:
         self.model_json_dru = self.json_file_dru.read()
         self.json_file_dru.close()
         self.loaded_model_dru = model_from_json(self.model_json_dru)
-        self.loaded_model_dru.load_weights("model-bw_dru.h5")
+        self.loaded_model_dru.load_weights(self.directory + "model-bw_dru.h5")
 
         self.json_file_tkdi = open(self.directory+"model-bw_tkdi.json" , "r")
         self.model_json_tkdi = self.json_file_tkdi.read()
         self.json_file_tkdi.close()
         self.loaded_model_tkdi = model_from_json(self.model_json_tkdi)
-        self.loaded_model_tkdi.load_weights(self.directory+"model-bw_tkdi.h5")
+        self.loaded_model_tkdi.load_weights(self.directory + "model-bw_tkdi.h5")
 
         self.json_file_smn = open(self.directory+"model-bw_smn.json" , "r")
         self.model_json_smn = self.json_file_smn.read()
         self.json_file_smn.close()
         self.loaded_model_smn = model_from_json(self.model_json_smn)
-        self.loaded_model_smn.load_weights(self.directory+"model-bw_smn.h5")
+        self.loaded_model_smn.load_weights(self.directory + "model-bw_smn.h5")
         
         self.ct = {}
         self.ct['blank'] = 0
@@ -134,7 +136,8 @@ class Application:
             self.panel3.config(text=self.current_symbol,font=("Courier",50))
             self.panel4.config(text=self.word,font=("Courier",40))
             self.panel5.config(text=self.str,font=("Courier",40))
-            predicts=self.hs.suggest(self.word)
+            predicts=self.hs.candidates(self.word)
+            predicts = list(predicts)  # convert to list to use indexing like predicts[0], predicts[1], etc.
             if(len(predicts) > 0):
                 self.bt1.config(text=predicts[0],font = ("Courier",20))
             else:
