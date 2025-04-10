@@ -3,29 +3,29 @@ import numpy as np
 import os
 import string
 # Create the directory structure
-if not os.path.exists("data"):
-    os.makedirs("data")
-if not os.path.exists("data/train"):
-    os.makedirs("data/train")
-if not os.path.exists("data/test"):
-    os.makedirs("data/test")
+if not os.path.exists("data2"):
+    os.makedirs("data2")
+if not os.path.exists("data2/train"):
+    os.makedirs("data2/train")
+if not os.path.exists("data2/test"):
+    os.makedirs("data2/test")
 for i in range(3):
-    if not os.path.exists("data/train/" + str(i)):
-        os.makedirs("data/train/"+str(i))
-    if not os.path.exists("data/test/" + str(i)):
-        os.makedirs("data/test/"+str(i))
+    if not os.path.exists("data2/train/" + str(i)):
+        os.makedirs("data2/train/"+str(i))
+    if not os.path.exists("data2/test/" + str(i)):
+        os.makedirs("data2/test/"+str(i))
 
 for i in string.ascii_uppercase:
-    if not os.path.exists("data/train/" + i):
-        os.makedirs("data/train/"+i)
-    if not os.path.exists("data/test/" + i):
-        os.makedirs("data/test/"+i)
+    if not os.path.exists("data2/train/" + i):
+        os.makedirs("data2/train/"+i)
+    if not os.path.exists("data2/test/" + i):
+        os.makedirs("data2/test/"+i)
     
 
 
 # Train or test 
 mode = 'train'
-directory = 'data/'+mode+'/'
+directory = 'data2/'+mode+'/'
 minValue = 70
 
 cap = cv2.VideoCapture(0)
