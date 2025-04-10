@@ -6,7 +6,7 @@ from image_processing import func
 if not os.path.exists("data2"):
     os.makedirs("data2")
 if not os.path.exists("data2/train"):
-    os.makedirs("dataluv/train")
+    os.makedirs("data2/train")
 if not os.path.exists("data2/test"):
     os.makedirs("data2/test")
 path="train"
@@ -43,6 +43,7 @@ for (dirpath,dirnames,filenames) in os.walk(path):
                 actual_path2=path1+"/"+"test/"+dirname+"/"+file
                 img = cv2.imread(actual_path, 0)
                 bw_image = func(actual_path)
+                bw_image = cv2.resize(bw_image, (128, 128))
                 if i<num:
                     c1 += 1
                     cv2.imwrite(actual_path1 , bw_image)
