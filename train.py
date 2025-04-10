@@ -29,6 +29,9 @@ test_set = tf.keras.utils.image_dataset_from_directory('data2/test',
                                             label_mode='categorical',
                                             shuffle=False) 
 
+# Get dynamic number of classes
+num_classes = len(training_set.class_names)
+
 #Data Augmentation layer
 data_augmentation = tf.keras.Sequential([
     layers.RandomFlip("horizontal"),
@@ -81,7 +84,8 @@ classifier.add(Dropout(0.40))
 classifier.add(Dense(units=96, activation='relu'))
 classifier.add(Dropout(0.40))
 classifier.add(Dense(units=64, activation='relu'))
-classifier.add(Dense(units=27, activation='softmax')) # softmax for more than 2
+# classifier.add(Dense(units=37, activation='softmax')) # softmax for more than 2
+classifier.add(Dense(units=num_classes, activation='softmax'))
 
 # Compiling the CNN
 classifier.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy']) # categorical_crossentropy for more than 2
@@ -122,6 +126,12 @@ with open("model-bw.json", "w") as json_file:
 print('Model Saved')
 classifier.save_weights('model-bw.h5')
 print('Weights saved')
+
+#to cross verify
+print("Train classes:", len(training_set.class_names))
+print("Test classes:", len(test_set.class_names))
+
+
 
 #plot accuracy and loss
 plt.plot(history.history['accuracy'], label='Train Accuracy')
