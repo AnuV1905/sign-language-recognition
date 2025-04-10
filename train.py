@@ -1,13 +1,62 @@
-# Importing the Keras libraries and packages
-from keras.models import Sequential
-from keras.layers import Convolution2D
-from keras.layers import MaxPooling2D
-from keras.layers import Flatten
-from keras.layers import Dense , Dropout
+# Importing the tensorflow.Keras libraries and packages
+# from tensorflow import keras
+import tensorflow as tf
+from tensorflow.keras import layers
+# from tensorflow.keras.preprocessing import image_dataset_from_directory
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Convolution2D, MaxPooling2D, Flatten, Dense, Dropout
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+import matplotlib.pyplot as plt
 import os
+# Set visible GPU
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 sz = 128
-# Step 1 - Building the CNN
+
+#Data loading
+training_set = tf.keras.utils.image_dataset_from_directory('data2/train',
+                                                 labels='inferred',
+                                                 image_size=(sz, sz),
+                                                 batch_size=10,
+                                                 color_mode='grayscale',
+                                                 label_mode='categorical',
+                                                 shuffle=True)
+
+test_set = tf.keras.utils.image_dataset_from_directory('data2/test',
+                                            labels='inferred',
+                                            image_size=(sz , sz),
+                                            batch_size=10,
+                                            color_mode='grayscale',
+                                            label_mode='categorical',
+                                            shuffle=False) 
+
+#Data Augmentation layer
+data_augmentation = tf.keras.Sequential([
+    layers.RandomFlip("horizontal"),
+    layers.RandomRotation(0.1),
+    layers.RandomZoom(0.1),
+    layers.RandomContrast(0.1)
+])
+
+# Normalization Layer
+normalization_layer = layers.Rescaling(1./255)
+
+# Apply augmentation + normalization
+training_set = training_set.map(lambda x, y: (data_augmentation(x, training=True), y))
+training_set = training_set.map(lambda x, y: (normalization_layer(x), y))
+test_set = test_set.map(lambda x, y: (normalization_layer(x), y))
+
+#visualize augmented images
+for images, _ in training_set.take(1):
+    plt.figure(figsize=(10, 2))
+    for i in range(5):
+        ax = plt.subplot(1, 5, i + 1)
+        plt.imshow(images[i].numpy().squeeze(), cmap='gray')
+        plt.axis("off")
+    plt.suptitle("Sample Augmented Images")
+    plt.show()
+
+
+# Building the CNN
 
 # Initializing the CNN
 classifier = Sequential()
@@ -36,38 +85,34 @@ classifier.add(Dense(units=27, activation='softmax')) # softmax for more than 2
 
 # Compiling the CNN
 classifier.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy']) # categorical_crossentropy for more than 2
+classifier.summary()
 
 
 # Step 2 - Preparing the train/test data and training the model
-classifier.summary()
-# Code copied from - https://keras.io/preprocessing/image/
-from keras.preprocessing.image import ImageDataGenerator
+# Code copied from - https://tensorflow.keras.io/preprocessing/image/
 
-train_datagen = ImageDataGenerator(
-        rescale=1./255,
-        shear_range=0.2,
-        zoom_range=0.2,
-        horizontal_flip=True)
+# train_datagen = image_dataset_from_directory(
+#         rescale=1./255,
+#         shear_range=0.2,
+#         zoom_range=0.2,
+#         horizontal_flip=True)
 
-test_datagen = ImageDataGenerator(rescale=1./255)
+# test_datagen = image_dataset_from_directory(rescale=1./255)
 
-training_set = train_datagen.flow_from_directory('data2/train',
-                                                 target_size=(sz, sz),
-                                                 batch_size=10,
-                                                 color_mode='grayscale',
-                                                 class_mode='categorical')
+#callbacks
+callbacks = [
+    EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True),
+    ModelCheckpoint('best_model.h5', save_best_only=True, monitor='val_loss')
+]
 
-test_set = test_datagen.flow_from_directory('data2/test',
-                                            target_size=(sz , sz),
-                                            batch_size=10,
-                                            color_mode='grayscale',
-                                            class_mode='categorical') 
-classifier.fit_generator(
+#train model
+history = classifier.fit(
         training_set,
-        steps_per_epoch=12841, # No of images in training set
-        epochs=5,
+        # steps_per_epoch=12841, # No of images in training set
+        epochs=10,
         validation_data=test_set,
-        validation_steps=4268)# No of images in test set
+        # validation_steps=4268, # No of images in test set
+        callbacks=callbacks)
 
 
 # Saving the model
@@ -78,3 +123,21 @@ print('Model Saved')
 classifier.save_weights('model-bw.h5')
 print('Weights saved')
 
+#plot accuracy and loss
+plt.plot(history.history['accuracy'], label='Train Accuracy')
+plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.title('Model Accuracy Over Epochs')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+plt.plot(history.history['loss'], label='Train Loss')
+plt.plot(history.history['val_loss'], label='Validation Loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.title('Model Loss Over Epochs')
+plt.legend()
+plt.grid(True)
+plt.show()

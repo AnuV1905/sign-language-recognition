@@ -2,7 +2,7 @@
 # $ conda create --name <env> --file <this file>
 # platform: linux-64
 # created-by: conda 25.1.1
-@EXPLICIT
+#@EXPLICIT
 https://repo.anaconda.com/pkgs/main/win-64/anaconda_powershell_prompt-1.1.0-haa95532_0.conda
 https://repo.anaconda.com/pkgs/main/win-64/anaconda_prompt-1.1.0-haa95532_0.conda
 https://repo.anaconda.com/pkgs/main/win-64/blas-1.0-mkl.conda
