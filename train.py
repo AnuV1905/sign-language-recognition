@@ -1,18 +1,18 @@
 # Importing the tensorflow.Keras libraries and packages
 # from tensorflow import keras
 import tensorflow as tf
-from tensorflow.keras import layers, Sequential
+from tensorflow.keras import layers, Sequential, regularizers
 # from tensorflow.keras.preprocessing import image_dataset_from_directory
 from tensorflow.keras.models import model_from_json
 from tensorflow.keras.layers import Convolution2D, MaxPooling2D, Flatten, Dense, Dropout
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 import matplotlib.pyplot as plt
 import os
 # Set visible GPU
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 sz = 128
-BATCH_SIZE = 32
-EPOCHS = 15
+BATCH_SIZE = 64
+EPOCHS = 500
 tf.random.set_seed(42)
 
 #Data loading
@@ -61,8 +61,8 @@ test_set = test_set.map(lambda x, y: (layers.Rescaling(1./255)(x), y), num_paral
 # AUTOTUNE = tf.data.AUTOTUNE
 # training_set = training_set.prefetch(buffer_size=AUTOTUNE)
 # test_set = test_set.prefetch(buffer_size=AUTOTUNE)
-training_set = training_set.prefetch(buffer_size=tf.data.AUTOTUNE)
-test_set = test_set.prefetch(buffer_size=tf.data.AUTOTUNE)
+training_set = training_set.cache().prefetch(buffer_size=tf.data.AUTOTUNE)
+test_set = test_set.cache().prefetch(buffer_size=tf.data.AUTOTUNE)
 
 #visualize augmented images
 for images, _ in training_set.take(1):
@@ -102,16 +102,16 @@ for images, _ in training_set.take(1):
 # # classifier.add(Dense(units=64, activation='relu'))
 # # classifier.add(Dense(units=37, activation='softmax')) # softmax for more than 2
 # classifier.add(Dense(units=num_classes, activation='softmax'))
-classifier = Sequential([
+classifier = Sequential([ #added regularization
     layers.Input(shape=(sz, sz, 1)),
-    Convolution2D(64, (3, 3), activation='relu'),
+    Convolution2D(64, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.001)),
     MaxPooling2D(pool_size=(2, 2)),
-    Convolution2D(128, (3, 3), activation='relu'),
+    Convolution2D(128, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.001)),
     MaxPooling2D(pool_size=(2, 2)),
-    Convolution2D(256, (3, 3), activation='relu'),
+    Convolution2D(256, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.001)),
     MaxPooling2D(pool_size=(2, 2)),
     Flatten(),
-    Dense(512, activation='relu'),
+    Dense(512, activation='relu', kernel_regularizer=regularizers.l2(0.001)),
     Dropout(0.3),
     Dense(num_classes, activation='softmax')
 ])
@@ -134,8 +134,9 @@ classifier.summary()
 
 #callbacks
 callbacks = [
-    EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True),
-    ModelCheckpoint('best_model.h5', save_best_only=True, monitor='val_loss')
+    EarlyStopping(monitor='val_loss', patience=15, restore_best_weights=True),
+    ModelCheckpoint('best_model.h5', save_best_only=True, monitor='val_loss'),
+    ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5, verbose=1)
 ]
 
 #train model
