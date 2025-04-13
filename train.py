@@ -10,26 +10,28 @@ import matplotlib.pyplot as plt
 import os
 # Set visible GPU
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-sz = 128
-BATCH_SIZE = 64
-EPOCHS = 500
-tf.random.set_seed(42)
+sz = (128, 128)
+BATCH_SIZE = 32
+EPOCHS = 100
+# tf.random.set_seed(42)
 
 #Data loading
 training_set = tf.keras.utils.image_dataset_from_directory('data2/train',
                                                  labels='inferred',
-                                                 image_size=(sz, sz),
+                                                 seed=42,
+                                                 image_size=sz,
                                                  batch_size=BATCH_SIZE,
                                                  color_mode='grayscale',
-                                                 label_mode='categorical',
+                                                 label_mode='int',
                                                  shuffle=True)
 
 test_set = tf.keras.utils.image_dataset_from_directory('data2/test',
                                             labels='inferred',
-                                            image_size=(sz , sz),
+                                            seed=42,
+                                            image_size=sz,
                                             batch_size=BATCH_SIZE,
                                             color_mode='grayscale',
-                                            label_mode='categorical',
+                                            label_mode='int',
                                             shuffle=False) 
 
 # Get dynamic number of classes
@@ -61,7 +63,7 @@ test_set = test_set.map(lambda x, y: (layers.Rescaling(1./255)(x), y), num_paral
 # AUTOTUNE = tf.data.AUTOTUNE
 # training_set = training_set.prefetch(buffer_size=AUTOTUNE)
 # test_set = test_set.prefetch(buffer_size=AUTOTUNE)
-training_set = training_set.cache().prefetch(buffer_size=tf.data.AUTOTUNE)
+training_set = training_set.cache().shuffle(1000).prefetch(buffer_size=tf.data.AUTOTUNE)
 test_set = test_set.cache().prefetch(buffer_size=tf.data.AUTOTUNE)
 
 #visualize augmented images
@@ -103,21 +105,21 @@ for images, _ in training_set.take(1):
 # # classifier.add(Dense(units=37, activation='softmax')) # softmax for more than 2
 # classifier.add(Dense(units=num_classes, activation='softmax'))
 classifier = Sequential([ #added regularization
-    layers.Input(shape=(sz, sz, 1)),
-    Convolution2D(64, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.001)),
+    layers.Input(shape=(128, 128, 1)),
+    Convolution2D(64, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.0001)),
     MaxPooling2D(pool_size=(2, 2)),
-    Convolution2D(128, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.001)),
+    Convolution2D(128, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.0001)),
     MaxPooling2D(pool_size=(2, 2)),
-    Convolution2D(256, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.001)),
+    Convolution2D(256, (3, 3), activation='relu', kernel_regularizer=regularizers.l2(0.0001)),
     MaxPooling2D(pool_size=(2, 2)),
     Flatten(),
-    Dense(512, activation='relu', kernel_regularizer=regularizers.l2(0.001)),
+    Dense(512, activation='relu', kernel_regularizer=regularizers.l2(0.0001)),
     Dropout(0.3),
     Dense(num_classes, activation='softmax')
 ])
 
 # # Compiling the CNN
-classifier.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy']) # categorical_crossentropy for more than 2
+classifier.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy']) # categorical_crossentropy for more than 2
 classifier.summary()
 
 
@@ -134,9 +136,9 @@ classifier.summary()
 
 #callbacks
 callbacks = [
-    EarlyStopping(monitor='val_loss', patience=15, restore_best_weights=True),
-    ModelCheckpoint('best_model.h5', save_best_only=True, monitor='val_loss'),
-    ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5, verbose=1)
+    EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True),
+    ModelCheckpoint('best_model.keras', save_best_only=True, monitor='val_loss'),
+    ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=3, verbose=1)
 ]
 
 #train model
