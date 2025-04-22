@@ -38,9 +38,10 @@ class Application:
             self.ct[i] = 0
         print("Loaded model from disk")
         self.root = tk.Tk()
-        self.root.title("Sign language to Text Converter")
+        self.root.title("Sign language recognition")
         self.root.protocol('WM_DELETE_WINDOW', self.destructor)
-        self.root.geometry("900x1100")
+        
+        self.root.geometry("900x900")
         self.panel = tk.Label(self.root)
         self.panel.place(x = 135, y = 10, width = 640, height = 640)
         self.panel2 = tk.Label(self.root) # initialize image panel
@@ -48,45 +49,45 @@ class Application:
         
         self.T = tk.Label(self.root)
         self.T.place(x=31,y = 17)
-        self.T.config(text = "Sign Language to Text",font=("courier",40,"bold"))
+        self.T.config(text = "Sign Language Recognition",font=("courier",25,"bold"))
         self.panel3 = tk.Label(self.root) # Current Symbol
-        self.panel3.place(x = 500,y=640)
+        self.panel3.place(x = 500,y=600)
         self.T1 = tk.Label(self.root)
-        self.T1.place(x = 10,y = 700)
-        self.T1.config(text="Character :",font=("Courier",40,"bold"))
+        self.T1.place(x = 10,y = 650)
+        self.T1.config(text="Character :",font=("Courier",20,"bold"))
         self.panel4 = tk.Label(self.root) # Word
-        self.panel4.place(x = 220,y=700)
+        self.panel4.place(x = 220,y=670)
         self.T2 = tk.Label(self.root)
-        self.T2.place(x = 10,y = 760)
-        self.T2.config(text ="Word :",font=("Courier",40,"bold"))
+        self.T2.place(x = 10,y = 690)
+        self.T2.config(text ="Word :",font=("Courier",20,"bold"))
         self.panel5 = tk.Label(self.root) # Sentence
-        self.panel5.place(x = 350,y=760)
+        self.panel5.place(x = 350,y=710)
         self.T3 = tk.Label(self.root)
-        self.T3.place(x = 10,y = 760)
-        self.T3.config(text ="Sentence :",font=("Courier",40,"bold"))
+        self.T3.place(x = 10,y = 710)
+        self.T3.config(text ="Sentence :",font=("Courier",20,"bold"))
 
         self.T4 = tk.Label(self.root)
         self.T4.place(x = 250,y = 820)
-        self.T4.config(text = "Suggestions",fg="red",font = ("Courier",40,"bold"))
+        self.T4.config(text = "Suggestions",fg="red",font = ("Courier",20,"bold"))
 
         self.btcall = tk.Button(self.root,command = self.action_call,height = 0,width = 0)
         self.btcall.config(text = "About",font = ("Courier",14))
-        self.btcall.place(x = 825, y = 0)
+        self.btcall.place(x = 725, y = 0)
 
         self.bt1=tk.Button(self.root, command=self.action1,height = 0,width = 0)
-        self.bt1.place(x = 26,y=890)
+        self.bt1.place(x = 26,y=750)
         
         self.bt2=tk.Button(self.root, command=self.action2,height = 0,width = 0)
-        self.bt2.place(x = 325,y=890)
+        self.bt2.place(x = 325,y=750)
         
         self.bt3=tk.Button(self.root, command=self.action3,height = 0,width = 0)
-        self.bt3.place(x = 625,y=890)
+        self.bt3.place(x = 625,y=750)
         
         self.bt4=tk.Button(self.root, command=self.action4,height = 0,width = 0)
-        self.bt4.place(x = 125,y=950)
+        self.bt4.place(x = 125,y=800)
         
         self.bt5=tk.Button(self.root, command=self.action5,height = 0,width = 0)
-        self.bt5.place(x = 425,y=950)
+        self.bt5.place(x = 425,y=800)
         
         self.str=""
 
@@ -132,7 +133,7 @@ class Application:
             self.panel3.config(text=self.current_symbol,font=("Courier",50))
             self.panel4.config(text=self.word,font=("Courier",40))
             self.panel5.config(text=self.str,font=("Courier",40))
-            predicts=self.hs.candidates(self.word)
+            predicts=list(self.hs.candidates(self.word))
             predicts = list(predicts)  # convert to list to use indexing like predicts[0], predicts[1], etc.
             
             buttons = [self.bt1, self.bt2, self.bt3, self.bt4, self.bt5]
@@ -145,10 +146,10 @@ class Application:
         # input_shape = self.loaded_model.input_shape[1:3]
         test_image = cv2.resize(test_image, (128, 128))
         test_image = test_image.reshape(1, 128, 128, 1)
-        print("Input shape before squeeze:", test_image.shape)
-        if test_image.ndim == 5:
-            test_image = np.squeeze(test_image, axis=1)
-        print("After squeeze:", test_image.shape)
+        print("Input shape:", test_image.shape)
+        # if test_image.ndim == 5:
+        #     test_image = np.squeeze(test_image, axis=0)
+        # print("After squeeze:", test_image.shape)
         result = self.loaded_model.predict(test_image)
         result_dru = self.loaded_model_dru.predict(test_image)
         result_tkdi = self.loaded_model_tkdi.predict(test_image)
@@ -163,7 +164,7 @@ class Application:
         self.current_symbol = prediction[0][0]
         #LAYER 2
         if(self.current_symbol == 'D' or self.current_symbol == 'R' or self.current_symbol == 'U'):
-        	prediction = {} 
+            prediction = {} 
             prediction['D'] = result_dru[0][0]
             prediction['R'] = result_dru[0][1]
             prediction['U'] = result_dru[0][2]
@@ -171,7 +172,7 @@ class Application:
             self.current_symbol = prediction[0][0]
 
         if(self.current_symbol == 'D' or self.current_symbol == 'I' or self.current_symbol == 'K' or self.current_symbol == 'T'):
-        	prediction = {}
+            prediction = {}
             prediction['D'] = result_tkdi[0][0]
             prediction['I'] = result_tkdi[0][1]
             prediction['K'] = result_tkdi[0][2]
@@ -180,7 +181,7 @@ class Application:
             self.current_symbol = prediction[0][0]
 
         if(self.current_symbol == 'M' or self.current_symbol == 'N' or self.current_symbol == 'S'):
-        	prediction1 = {}
+            prediction1 = {}
             prediction1['M'] = result_smn[0][0] 
             prediction1['N'] = result_smn[0][1]
             prediction1['S'] = result_smn[0][2]
@@ -220,40 +221,40 @@ class Application:
                     self.str = ""
                 self.blank_flag = 0
                 self.word += self.current_symbol
-def action1(self):
-    predicts = self.hs.suggest(self.word)
-    if len(predicts) > 0:
-        self.word = ""
-        self.str += " "
-        self.str += predicts[0]
+    def action1(self):
+        predicts = list(self.hs.candidates(self.word))
+        if len(predicts) > 0:
+            self.word = ""
+            self.str += " "
+            self.str += predicts[0]
 
-def action2(self):
-    predicts = self.hs.suggest(self.word)
-    if len(predicts) > 1:
-        self.word = ""
-        self.str += " "
-        self.str += predicts[1]
+    def action2(self):
+        predicts = list(self.hs.candidates(self.word))
+        if len(predicts) > 1:
+            self.word = ""
+            self.str += " "
+            self.str += predicts[1]
 
-def action3(self):
-    predicts = self.hs.suggest(self.word)
-    if len(predicts) > 2:
-        self.word = ""
-        self.str += " "
-        self.str += predicts[2]
+    def action3(self):
+        predicts = list(self.hs.candidates(self.word))
+        if len(predicts) > 2:
+            self.word = ""
+            self.str += " "
+            self.str += predicts[2]
 
-def action4(self):
-    predicts = self.hs.suggest(self.word)
-    if len(predicts) > 3:
-        self.word = ""
-        self.str += " "
-        self.str += predicts[3]
+    def action4(self):
+        predicts = list(self.hs.candidates(self.word))
+        if len(predicts) > 3:
+            self.word = ""
+            self.str += " "
+            self.str += predicts[3]
 
-def action5(self):
-    predicts = self.hs.suggest(self.word)
-    if len(predicts) > 4:
-        self.word = ""
-        self.str += " "
-        self.str += predicts[4]
+    def action5(self):
+        predicts = list(self.hs.candidates(self.word))
+        if len(predicts) > 4:
+            self.word = ""
+            self.str += " "
+            self.str += predicts[4]
 
     def destructor(self):
         print("Closing Application...")
