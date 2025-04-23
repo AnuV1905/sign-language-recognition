@@ -5,7 +5,7 @@ import random
 # CONFIGURATION
 src_base = 'data2/raw'
 dst_base = 'data2'
-train_split = 0.6  # 80% train, 20% test
+train_split = 0.8  # 80% train, 20% test
 delete_raw_after_split = True  # set to False if you want to keep raw images
 
 total_summary = {}

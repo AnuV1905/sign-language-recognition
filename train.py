@@ -11,8 +11,8 @@ import os
 # Set visible GPU
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 sz = (128, 128)
-BATCH_SIZE = 32
-EPOCHS = 50
+BATCH_SIZE = 16
+EPOCHS = 100
 # tf.random.set_seed(42)
 
 #Data loading
@@ -143,7 +143,7 @@ classifier.summary()
 callbacks = [
     EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True),
     ModelCheckpoint('best_model.keras', save_best_only=True, monitor='val_loss'),
-    ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=3, verbose=1)
+    ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5, verbose=1)
 ]
 
 #train model
