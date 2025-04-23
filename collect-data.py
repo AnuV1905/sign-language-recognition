@@ -24,8 +24,8 @@ for i in string.ascii_uppercase:
 
 
 # Train or test 
-mode = 'train'
-directory = 'data2/'+mode+'/'
+# mode = 'train'
+directory = 'data2/raw/'
 minValue = 70
 
 cap = cv2.VideoCapture(0)
@@ -171,14 +171,20 @@ while True:
         cv2.imwrite(directory+'1/'+str(count['one'])+'.jpg', roi)
     if interrupt & 0xFF == ord('2'):
         cv2.imwrite(directory+'2/'+str(count['two'])+'.jpg', roi)       
-    # if interrupt & 0xFF == ord('3'):
-    #     cv2.imwrite(directory+'3/'+str(count['three'])+'.jpg', roi)
-    # if interrupt & 0xFF == ord('4'):
-    #     cv2.imwrite(directory+'4/'+str(count['four'])+'.jpg', roi)
-    # if interrupt & 0xFF == ord('5'):
-    #     cv2.imwrite(directory+'5/'+str(count['five'])+'.jpg', roi)
-    # if interrupt & 0xFF == ord('6'):
-    #     cv2.imwrite(directory+'6/'+str(count['six'])+'.jpg', roi)
+    if interrupt & 0xFF == ord('3'):
+        cv2.imwrite(directory+'3/'+str(count['three'])+'.jpg', roi)
+    if interrupt & 0xFF == ord('4'):
+        cv2.imwrite(directory+'4/'+str(count['four'])+'.jpg', roi)
+    if interrupt & 0xFF == ord('5'):
+        cv2.imwrite(directory+'5/'+str(count['five'])+'.jpg', roi)
+    if interrupt & 0xFF == ord('6'):
+        cv2.imwrite(directory+'6/'+str(count['six'])+'.jpg', roi)
+    if interrupt & 0xFF == ord('7'):
+        cv2.imwrite(directory+'7/'+str(count['six'])+'.jpg', roi)
+    if interrupt & 0xFF == ord('8'):
+        cv2.imwrite(directory+'8/'+str(count['six'])+'.jpg', roi)
+    if interrupt & 0xFF == ord('9'):
+        cv2.imwrite(directory+'9/'+str(count['six'])+'.jpg', roi)
     if interrupt & 0xFF == ord('a'):
         cv2.imwrite(directory+'A/'+str(count['a'])+'.jpg', roi)
     if interrupt & 0xFF == ord('b'):
