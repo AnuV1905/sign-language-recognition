@@ -180,11 +180,11 @@ while True:
     if interrupt & 0xFF == ord('6'):
         cv2.imwrite(directory+'6/'+str(count['six'])+'.jpg', roi)
     if interrupt & 0xFF == ord('7'):
-        cv2.imwrite(directory+'7/'+str(count['six'])+'.jpg', roi)
+        cv2.imwrite(directory+'7/'+str(count['seven'])+'.jpg', roi)
     if interrupt & 0xFF == ord('8'):
-        cv2.imwrite(directory+'8/'+str(count['six'])+'.jpg', roi)
+        cv2.imwrite(directory+'8/'+str(count['eight'])+'.jpg', roi)
     if interrupt & 0xFF == ord('9'):
-        cv2.imwrite(directory+'9/'+str(count['six'])+'.jpg', roi)
+        cv2.imwrite(directory+'9/'+str(count['nine'])+'.jpg', roi)
     if interrupt & 0xFF == ord('a'):
         cv2.imwrite(directory+'A/'+str(count['a'])+'.jpg', roi)
     if interrupt & 0xFF == ord('b'):
