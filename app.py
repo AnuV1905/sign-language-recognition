@@ -282,14 +282,14 @@ class Application:
         self.tx.place(x = 330,y = 20)
         self.tx.config(text = "Efforts By", fg="red", font = ("Courier",30,"bold"))
 
-        self.photo1 = tk.PhotoImage(file='Pictures/ravi.png')
+        self.photo1 = tk.PhotoImage(file='Pictures/anushka.jpg')
         self.w1 = tk.Label(self.root1, image = self.photo1)
         self.w1.place(x = 20, y = 105)
         self.tx6 = tk.Label(self.root1)
         self.tx6.place(x = 20,y = 250)
         self.tx6.config(text = "Anushka Verma\n2202073", font = ("Courier",15,"bold"))
 
-        self.photo2 = tk.PhotoImage(file='Pictures/nitin.png')
+        self.photo2 = tk.PhotoImage(file='Pictures/nikhil.jpg')
         self.w2 = tk.Label(self.root1, image = self.photo2)
         self.w2.place(x = 200, y = 105)
         self.tx2 = tk.Label(self.root1)
@@ -297,7 +297,7 @@ class Application:
         self.tx2.config(text = "Nikhil Ranjan\n2202002", font = ("Courier",15,"bold"))
 
         
-        self.photo3 = tk.PhotoImage(file='Pictures/luv.png')
+        self.photo3 = tk.PhotoImage(file='Pictures/zeba.jpg')
         self.w3 = tk.Label(self.root1, image = self.photo3)
         self.w3.place(x = 380, y = 105)
         self.tx3 = tk.Label(self.root1)
