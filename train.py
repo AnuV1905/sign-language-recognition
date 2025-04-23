@@ -12,7 +12,7 @@ import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 sz = (128, 128)
 BATCH_SIZE = 32
-EPOCHS = 100
+EPOCHS = 50
 # tf.random.set_seed(42)
 
 #Data loading
@@ -33,6 +33,11 @@ test_set = tf.keras.utils.image_dataset_from_directory('data2/test',
                                             color_mode='grayscale',
                                             label_mode='int',
                                             shuffle=False) 
+
+# Check number of classes and their order
+print(f"\n📂 Number of classes: {len(training_set.class_names)}")
+print(f"📋 Class names (folder order): {training_set.class_names}")
+
 
 # Get dynamic number of classes
 num_classes = len(training_set.class_names)
@@ -153,10 +158,10 @@ history = classifier.fit(
 
 # Saving the model
 model_json = classifier.to_json()
-with open("model-bw.json", "w") as json_file:
+with open("model2-bw.json", "w") as json_file:
     json_file.write(model_json)
 print('Model Saved')
-classifier.save_weights('model-bw.weights.h5')
+classifier.save_weights('model2-bw.weights.h5')
 print('Weights saved')
 
 
