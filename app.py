@@ -58,7 +58,7 @@ class Application:
         self.panel4 = tk.Label(self.root) # Word
         self.panel4.place(x = 220,y=670)
         self.T2 = tk.Label(self.root)
-        self.T2.place(x = 10,y = 690)
+        self.T2.place(x = 10,y = 680)
         self.T2.config(text ="Word :",font=("Courier",20,"bold"))
         self.panel5 = tk.Label(self.root) # Sentence
         self.panel5.place(x = 350,y=710)
@@ -78,16 +78,16 @@ class Application:
         self.bt1.place(x = 26,y=750)
         
         self.bt2=tk.Button(self.root, command=self.action2,height = 0,width = 0)
-        self.bt2.place(x = 325,y=750)
+        self.bt2.place(x = 125,y=750)
         
         self.bt3=tk.Button(self.root, command=self.action3,height = 0,width = 0)
-        self.bt3.place(x = 625,y=750)
+        self.bt3.place(x = 325,y=750)
         
         self.bt4=tk.Button(self.root, command=self.action4,height = 0,width = 0)
-        self.bt4.place(x = 125,y=800)
+        self.bt4.place(x = 425,y=750)
         
         self.bt5=tk.Button(self.root, command=self.action5,height = 0,width = 0)
-        self.bt5.place(x = 425,y=800)
+        self.bt5.place(x = 625,y=750)
         
         self.str=""
 
